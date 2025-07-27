@@ -4,7 +4,7 @@ import productRoutes from './router/products.js'
 import categoryRoutes from './router/categories.js'
 
 const app = express();
-const PORT = 3001;
+const PORT = 3306;
 
 app.use(cors({
     origin: '*',
