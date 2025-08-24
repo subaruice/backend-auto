@@ -15,7 +15,7 @@ const PORT = 3001;
 
 app.use(
     cors({
-        origin: "http://localhost:5173",
+        origin: "https://subaruice.github.io/",
         exposedHeaders: ["x-total-count"],
         credentials: true,
     })
