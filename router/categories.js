@@ -4,7 +4,6 @@ import { getAllCategories } from "../db/queries.js";
 
 const router = express.Router();
 
-// GET: categories with nested subcategories
 router.get("/", async (req, res) => {
     try {
         const [rows] = await pool.query(getAllCategories);

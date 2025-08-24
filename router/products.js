@@ -67,9 +67,9 @@ router.get("/", async (req, res) => {
 
         res.set("x-total-count", count.length);
         res.json(cleanedProducts);
-    } catch {
+    } catch(err) {
         console.log("DB error");
-        res.status(500).json({ error: "db error" });
+        res.status(500).json({ error: err });
     }
 });
 
@@ -79,7 +79,7 @@ router.get("/catalog", async (req, res) => {
     try {
         const [rows] = await pool.query(`${getAllProducts} LIMIT ? OFFSET ?`, [limit, offset]);
         if (rows.length === 0) {
-            return res.status(404).json({ error: "Нет товаров" });
+            return res.status(404).json("Нет товаров");
         }
         const cleanedProducts = rows.map((product) => ({
             ...product,
@@ -88,28 +88,7 @@ router.get("/catalog", async (req, res) => {
             brief_description: cleanHtml(product.brief_description),
         }));
 
-        const productsMap = new Map();
-
-        cleanedProducts.forEach((row) => {
-            if (!productsMap.has(row.productID)) {
-                const { picture_id, filename, thumbnail, enlarged, ...productFields } = row;
-                productsMap.set(row.productID, {
-                    ...productFields,
-                    pictures: [], // always initialize
-                });
-            }
-            if (row.picture_id) {
-                productsMap.get(row.productID).pictures.push({
-                    photoID: row.picture_id,
-                    filename: row.filename,
-                    thumbnail: row.thumbnail,
-                    enlarged: row.enlarged,
-                });
-            }
-        });
-        const result = Array.from(productsMap.values());
-        res.set("x-total-count", result.length);
-        res.json(result);
+        res.json(cleanedProducts);
     } catch (err) {
         console.error("DB error: ", err.message);
         res.status(500).json({ error: "Database error" });

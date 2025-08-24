@@ -57,15 +57,19 @@ export const getAllCategories = `
 `;
 
 export const getAllProducts = `
-  SELECT 
-    p.*, 
-    pic.photoID AS picture_id, 
-    pic.filename, 
-    pic.thumbnail, 
-    pic.enlarged 
-  FROM avl_products p
-  LEFT JOIN avl_product_pictures pic 
-    ON p.productID = pic.productID
+  SELECT p.*,
+    JSON_ARRAYAGG(
+        JSON_OBJECT(
+        'photoID', pp.photoID,
+        'filename', pp.filename,
+        'thumbnail', pp.thumbnail,
+        'enlarged', pp.enlarged
+        )
+    ) AS pictures
+
+    FROM avl_products p
+    LEFT JOIN avl_product_pictures pp ON p.productID = pp.productID
+    GROUP BY p.productID
 `;
 export const getAllSaleProducts = `
     SELECT p.*,
