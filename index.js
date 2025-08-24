@@ -15,7 +15,7 @@ const PORT = 3001;
 
 app.use(
     cors({
-        origin: "https://subaruice.github.io/",
+        origin: "https://subaruice.github.io/auto-parts-store/",
         exposedHeaders: ["x-total-count"],
         credentials: true,
     })
