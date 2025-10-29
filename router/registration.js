@@ -30,13 +30,13 @@ router.post("/registration", async (req, res) => {
             [login, hashPass, email, reg_datetime, name, surname]
         );
 
-        const token = jwt.sign({ id: result.insertId, login, email }, process.env.JWT_SECRET_KEY, { expiresIn: "1d" });
+        const token = jwt.sign({ id: result.insertId, login, email }, process.env.JWT_SECRET_KEY, { expiresIn: "30d" });
 
         res.cookie("jwt", token, {
             httpOnly: true,
             secure: false,
             sameSite: "strict",
-            maxAge: 1000 * 60 * 60,
+            maxAge: 1000 * 60 * 60 * 24 * 30,
         });
         res.status(201).json({ message: `Вы успешно зарегестрировались ${login}` });
     } catch (error) {

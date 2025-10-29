@@ -29,9 +29,20 @@ router.patch("/profile/edit", upload.single("avatar_image"), async (req, res) =>
                     });
                     stream.end(req.file.buffer);
                 });
+                const [imageExist] = await pool.query(`SELECT avatar_image FROM avl_customers WHERE customerID = ?`, [
+                    id,
+                ]);
+                if (imageExist.length !== 0) {
+                    const public_id = imageExist[0].avatar_image
+                        .split("/")
+                        .slice(-2)
+                        .join("/")
+                        .replace(/\.[^/.]+$/, "");
+                    await cloudinary.uploader.destroy(public_id);
+                }
                 updates.avatar_image = result?.secure_url;
             } catch (err) {
-                res.status(500).json({ message: "pizdec" });
+                return res.status(500).json({ message: "pizdec" });
             }
         }
         const fields = Object.keys(updates).filter((key) => updates[key] !== undefined && updates[key] !== null);
@@ -42,16 +53,22 @@ router.patch("/profile/edit", upload.single("avatar_image"), async (req, res) =>
         }
         const setString = fields.map((f) => `${f} = ?`).join(", ");
 
-        const [result] = await pool.query(`UPDATE avl_customers SET ${setString} WHERE customerID = ?`, [...values, id]);
-        
-        if(result.changedRows === 0){
-            return res.json({message: 'Data is not changed'})
+        const [result] = await pool.query(`UPDATE avl_customers SET ${setString} WHERE customerID = ?`, [
+            ...values,
+            id,
+        ]);
+
+        if (result.changedRows === 0) {
+            return res.json({ message: "Data is not changed" });
         }
 
-        res.json({ message: `${id} пользователь с этим id изменён`, avatar_url: updates['avatar_image'] ? updates['avatar_image'] : null  });
+        res.json({
+            message: `${id} пользователь с этим id изменён`,
+            avatar_url: updates["avatar_image"] ? updates["avatar_image"] : null,
+        });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: "Internal error" });
+        return res.status(500).json({ message: "Internal error" });
     }
 });
 

@@ -23,13 +23,13 @@ router.post("/login", async (req, res) => {
             return res.status(401).json({ message: "Неправильный пароль" });
         }
 
-        const token = jwt.sign({ id: user[0].customerID, login: user[0].Login, email }, process.env.JWT_SECRET_KEY, { expiresIn: "1d" });
+        const token = jwt.sign({ id: user[0].customerID, login: user[0].Login, email }, process.env.JWT_SECRET_KEY, { expiresIn: "30d" });
 
         res.cookie("jwt", token, {
             httpOnly: true,
             secure: false,
             sameSite: "strict",
-            maxAge: 1000 * 60 * 60,
+            maxAge: 1000 * 60 * 60 * 24 * 30,
         });
         res.json({ message: "Вы успешно вошли в систему", user: user[0] });
     } catch (err) {
