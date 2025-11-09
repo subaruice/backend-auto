@@ -28,7 +28,7 @@ router.post("/login", async (req, res) => {
         res.cookie("jwt", token, {
             httpOnly: true,
             secure: false,
-            sameSite: "strict",
+            sameSite: "lax",
             maxAge: 1000 * 60 * 60 * 24 * 30,
         });
         res.json({ message: "Вы успешно вошли в систему", user: user[0] });
