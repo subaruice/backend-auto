@@ -34,7 +34,7 @@ router.post("/registration", async (req, res) => {
 
         res.cookie("jwt", token, {
             httpOnly: true,
-            secure: false,
+            secure: true,
             sameSite: "none",
             maxAge: 1000 * 60 * 60 * 24 * 30,
         });
